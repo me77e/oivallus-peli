@@ -473,3 +473,9 @@ button.action {
     transform: translate(-50%, -50%) scale(1);
   }
 }
+
+/* Tehtavaeditorin pysyva ruudukko */
+.editor-tools{display:grid;gap:9px;margin:16px 0}.editor-tools input,.editor-tools select{max-width:100%;min-width:0}.editor-board{display:grid;gap:8px;margin:16px 0}.editor-cell{aspect-ratio:1;min-width:0;border:2px dashed #b5a8db;border-radius:12px;background:#f7f3ff;display:flex;align-items:center;justify-content:center;font-size:clamp(20px,3vw,38px);cursor:pointer;overflow:hidden}.editor-cell img{width:100%;height:100%;object-fit:contain}.symbol-card{font-size:clamp(24px,4vw,56px);font-weight:800}.color-card{display:block;width:65%;aspect-ratio:1;border-radius:50%;border:2px solid #ffffff55}.editor-cell .color-card{width:65%}.editor-cell:focus-visible{outline:3px solid #6c58c7;outline-offset:2px}
+
+/* Suljettu kortti nayttaa vain CSS:n kysymysmerkin. */
+.card:not(.selected):not(.matched) { color: transparent; }

@@ -21,7 +21,7 @@
     db = null;
   let customMode = false,
     customPictures = Array(30).fill(null),
-    customLabel = "Etsi yhteen kuuluvat kuvat 🧩";
+    customLabel = "Vapaa päättely";
   const gridSizes = {
     "4x4": { cols: 4, count: 16 },
     "4x6": { cols: 4, count: 24 },
@@ -41,13 +41,6 @@
     cards = [],
     current = null,
     waitTimer = null;
-  const shuffle = (a) => {
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-  };
   function shapeSvg(shape, x, y, color, size) {
     let content = "";
     const base = `fill="${color}" stroke="#293747" stroke-width="1.4" stroke-linejoin="round"`;
@@ -132,29 +125,26 @@
       "vaaleanpunainen",
     ],
     shapeNames = ["ympyrä", "neliö", "kolmio", "tähti", "sydän", "vinoneliö"];
-  function makeCards(key) {
-    const out = [];
-    for (let p = 0; p < gridSizes[gridSize].count / 2; p++) {
-      for (let j = 0; j < 2; j++) {
-        const idx = p * 2 + j;
-        let ci = (p * 3 + j * 2) % 6,
-          si = (p * 2 + j * 3) % 6,
-          n = ((p + j * 2) % 6) + 1;
-        if (key === "color") ci = p % 6;
-        if (key === "shape") si = p % 6;
-        if (key === "count") n = (p % 6) + 1;
-        out.push({
-          id: idx,
-          color: colors[ci],
-          colorName: colorNames[ci],
-          shape: shapes[si],
-          shapeName: shapeNames[si],
-          count: n,
-          matched: false,
-        });
-      }
-    }
-    return shuffle(out);
+  // Kiintea looginen esimerkki: rivi = muoto ja vari, sarake = lukumaara.
+  function makeCards() {
+    const { cols, count } = gridSizes[gridSize];
+    const examples = [
+      { shape: "heart", color: "#e979ad", shapeName: "sydän", colorName: "vaaleanpunainen" },
+      { shape: "star", color: "#e9a638", shapeName: "tähti", colorName: "keltainen" },
+      { shape: "circle", color: "#4386dc", shapeName: "ympyrä", colorName: "sininen" },
+      { shape: "triangle", color: "#36a886", shapeName: "kolmio", colorName: "vihreä" },
+      { shape: "square", color: "#995dcb", shapeName: "neliö", colorName: "violetti" },
+      { shape: "diamond", color: "#e35b64", shapeName: "vinoneliö", colorName: "punainen" },
+      { shape: "heart", color: "#4386dc", shapeName: "sydän", colorName: "sininen" },
+      { shape: "star", color: "#36a886", shapeName: "tähti", colorName: "vihreä" },
+      { shape: "circle", color: "#e979ad", shapeName: "ympyrä", colorName: "vaaleanpunainen" },
+      { shape: "triangle", color: "#e9a638", shapeName: "kolmio", colorName: "keltainen" }
+    ];
+    return Array.from({ length: count }, (_, id) => {
+      const row = Math.floor(id / cols);
+      const column = id % cols;
+      return { id, ...examples[row % examples.length], count: column + 1 };
+    });
   }
   function render() {
     const total = gridSizes[gridSize].count;
@@ -178,9 +168,26 @@
       );
       b.setAttribute("aria-pressed", selected.includes(i) ? "true" : "false");
       b.disabled = c.matched || selected.includes(i);
-      b.innerHTML = c.image
-        ? `<img src="${c.image}" alt="Kuvakortti">`
-        : picture(c);
+      if (selected.includes(i)) {
+        if (c.image) {
+          const img = document.createElement("img");
+          img.src = c.image;
+          img.alt = "Kuva " + (i + 1);
+          b.appendChild(img);
+        } else if (c.text) {
+          const span = document.createElement("span");
+          span.className = "symbol-card";
+          span.textContent = c.text;
+          b.appendChild(span);
+        } else if (c.fill) {
+          const dot = document.createElement("span");
+          dot.className = "color-card";
+          dot.style.backgroundColor = c.fill;
+          b.appendChild(dot);
+        } else {
+          b.innerHTML = picture(c);
+        }
+      }
       b.addEventListener("click", () => pick(i));
       board.appendChild(b);
     });
@@ -192,26 +199,14 @@
     if (waitTimer) clearTimeout(waitTimer);
     waitTimer = null;
     round++;
-    found = 0;
     selected = [];
-    locked = false;
-    current = rules[(round - 1) % 3];
     cards = customMode
-      ? shuffle(
-          customPictures
-            .slice(0, gridSizes[gridSize].count)
-            .map((image, id) => ({
-              id,
-              image,
-              group: Math.floor(id / 2),
-              matched: false,
-            })),
-        )
-      : makeCards(current.key);
-    ruleEl.textContent = customMode ? customLabel : current.label;
+      ? customPictures.slice(0, gridSizes[gridSize].count)
+          .map((item, id) => ({ id, ...(typeof item === "string" ? {image:item} : item) }))
+      : makeCards();
+    ruleEl.textContent = "Mitä yhteistä huomaat kuvissa? 🔎";
     feedback.className = "feedback";
-    feedback.textContent =
-      "Avaa kortteja yksi kerrallaan. Jokainen kortti jää näkyviin.";
+    feedback.textContent = "Avaa kortteja yksi kerrallaan ja keksi itse, mitä yhteistä kuvissa on. Kuvien paikat eivät vaihdu.";
     render();
   }
   function pick(i) {
@@ -219,69 +214,47 @@
     selected.push(i);
     if (selected.length === gridSizes[gridSize].count) {
       feedback.textContent =
-        "🎉 Kaikki kortit ovat nyt auki! Tutki kuvia rauhassa tai aloita uusi kierros.";
+        "🎉 Kaikki kortit ovat auki! Kerro oma oivalluksesi. Voit juhlia onnistumista tai aloittaa uuden kierroksen.";
       feedback.className = "feedback complete";
     } else {
       feedback.textContent = `Kortti ${selected.length}/${gridSizes[gridSize].count} avattu. Avaa seuraava kortti!`;
     }
     render();
   }
-  const uploadInputs = [],
-    previews = [];
-  function updateRows() {
-    const count = gridSizes[gridSize].count;
-    rows
-      .querySelectorAll(".pairrow")
-      .forEach((row) => (row.hidden = Number(row.dataset.pair) >= count / 2));
-    root.getElementById("uploadStatus").textContent =
-      "Lisää " + count + " kuvaa (" + count / 2 + " paria).";
-  }
   const rows = root.getElementById("uploadRows");
-  for (let pair = 0; pair < 15; pair++) {
-    const row = document.createElement("div");
-    row.className = "pairrow";
-    row.dataset.pair = pair;
-    const heading = document.createElement("strong");
-    heading.textContent = `Pari ${pair + 1}`;
-    row.appendChild(heading);
-    for (let side = 0; side < 2; side++) {
-      const id = pair * 2 + side;
-      const label = document.createElement("label");
-      label.textContent = `Kuva ${side + 1}`;
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/*";
-      input.setAttribute("aria-label", `Pari ${pair + 1}, kuva ${side + 1}`);
-      uploadInputs[id] = input;
-      const preview = document.createElement("img");
-      preview.hidden = true;
-      previews[id] = preview;
-      input.addEventListener("change", () => {
-        const file = input.files && input.files[0];
-        if (!file) return;
-        if (!file.type.startsWith("image/")) {
-          root.getElementById("uploadStatus").textContent =
-            "Valitse kuvatiedosto.";
-          return;
-        }
-        resizeImage(file)
-          .then((data) => {
-            customPictures[id] = data;
-            preview.src = data;
-            preview.hidden = false;
-            root.getElementById("uploadStatus").textContent =
-              `Lisätty ${customPictures.slice(0, gridSizes[gridSize].count).filter(Boolean).length}/${gridSizes[gridSize].count} kuvaa.`;
-          })
-          .catch(
-            () =>
-              (root.getElementById("uploadStatus").textContent =
-                "Kuvan lukeminen epäonnistui."),
-          );
-      });
-      label.append(input, preview);
-      row.appendChild(label);
+  const itemType = root.getElementById("itemType"), itemValue = root.getElementById("itemValue"), itemColor = root.getElementById("itemColor"), itemFile = root.getElementById("itemFile");
+  let selectedImage = null;
+  itemFile.addEventListener("change", async () => {
+    if (!itemFile.files?.[0]) return;
+    try { selectedImage = await resizeImage(itemFile.files[0]); root.getElementById("uploadStatus").textContent = "Kuva valittu. Napsauta ruutuja, joihin haluat sijoittaa sen."; }
+    catch { root.getElementById("uploadStatus").textContent = "Kuvan lataus epäonnistui."; }
+  });
+  function currentItem() {
+    if (itemType.value === "image") return selectedImage ? {image:selectedImage} : null;
+    if (itemType.value === "color") return {fill:itemColor.value};
+    return {text:itemValue.value.trim() || (itemType.value === "number" ? "1" : "A")};
+  }
+  function updateRows() {
+    const {cols,count} = gridSizes[gridSize];
+    rows.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+    rows.innerHTML = "";
+    for (let i=0;i<count;i++) {
+      const btn=document.createElement("button"); btn.type="button"; btn.className="editor-cell";
+      btn.draggable=!!customPictures[i]; btn.dataset.index=i;
+      const item=customPictures[i];
+      if(item?.image || typeof item === "string") { const img=document.createElement("img"); img.src=typeof item === "string" ? item : item.image; img.alt=`Kuva ${i+1}`; btn.appendChild(img); }
+      else if(item?.text) { const el=document.createElement("strong"); el.textContent=item.text; btn.appendChild(el); }
+      else if(item?.fill) { const dot=document.createElement("span"); dot.className="color-card"; dot.style.backgroundColor=item.fill; btn.appendChild(dot); }
+      else btn.textContent="+";
+      btn.title=`Ruutu ${i+1}. Napsauta sijoittaaksesi, oikea klikkaus tyhjentää.`;
+      btn.setAttribute("aria-label",`Ruutu ${i+1}`);
+      btn.addEventListener("click",()=>{const chosen=currentItem(); if(!chosen){root.getElementById("uploadStatus").textContent="Valitse ensin kuvatiedosto.";return;} customPictures[i]={...chosen};updateRows();});
+      btn.addEventListener("contextmenu",e=>{e.preventDefault();customPictures[i]=null;updateRows();});
+      btn.addEventListener("dragstart",e=>e.dataTransfer.setData("text/plain",String(i)));
+      btn.addEventListener("dragover",e=>e.preventDefault());
+      btn.addEventListener("drop",e=>{e.preventDefault();const from=Number(e.dataTransfer.getData("text/plain"));if(Number.isInteger(from)&&from>=0&&from<count&&customPictures[from]){customPictures[i]={...customPictures[from]};updateRows();}});
+      rows.appendChild(btn);
     }
-    rows.appendChild(row);
   }
   function resizeImage(file) {
     return new Promise((resolve, reject) => {
@@ -396,19 +369,10 @@
     customPictures = Array(30).fill(null);
     game.images.forEach((img, i) => (customPictures[i] = img));
     updateRows();
-    customLabel = game.rule;
+    customLabel = game.rule || "Vapaa päättely";
     root.getElementById("setName").value = game.name;
-    root.getElementById("customRule").value = game.rule;
-    customPictures.forEach((img, i) => {
-      if (img) {
-        previews[i].src = img;
-        previews[i].hidden = false;
-      } else {
-        previews[i].removeAttribute("src");
-        previews[i].hidden = true;
-      }
-      uploadInputs[i].value = "";
-    });
+    root.getElementById("customRule").value = customLabel;
+    updateRows();
     customMode = true;
     round = 0;
     score = 0;
@@ -421,12 +385,7 @@
     activeSetId = null;
     customPictures = Array(30).fill(null);
     root.getElementById("setName").value = "Oma kuvapeli";
-    root.getElementById("customRule").value = "Etsi yhteen kuuluvat kuvat 🧩";
-    previews.forEach((p, i) => {
-      p.removeAttribute("src");
-      p.hidden = true;
-      uploadInputs[i].value = "";
-    });
+    root.getElementById("customRule").value = "Vapaa päättely";
     updateRows();
     root.getElementById("editor").open = true;
     root.getElementById("setName").focus();
@@ -449,9 +408,10 @@
   root.getElementById("newSet").addEventListener("click", newSet);
   root.getElementById("useCustom").addEventListener("click", async () => {
     const status = root.getElementById("uploadStatus");
-    if (customPictures.slice(0, gridSizes[gridSize].count).some((x) => !x)) {
+    const chosenImages = customPictures.slice(0, gridSizes[gridSize].count);
+    if (chosenImages.some((x) => !x)) {
       status.textContent =
-        "Lisää ensin kaikki " + gridSizes[gridSize].count + " kuvaa.";
+        "Täytä ensin kaikki " + gridSizes[gridSize].count + " ruutua.";
       return;
     }
     if (!db) {
@@ -461,7 +421,7 @@
     }
     customLabel =
       root.getElementById("customRule").value.trim() ||
-      "Etsi yhteen kuuluvat kuvat 🧩";
+      "Vapaa päättely";
     const name = root.getElementById("setName").value.trim() || "Oma kuvapeli",
       id =
         editingSetId ||

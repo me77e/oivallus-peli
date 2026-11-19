@@ -31,12 +31,12 @@
           <section class="panel">
             <div class="stats">
               <span id="round">Kierros 1</span
-              ><span id="pairs">Avattu 0 / 12</span
-              ><span id="score">Kortteja 12</span>
+              ><span id="pairs">Avattu 0 / 16</span
+              ><span id="score">Kortteja 16</span>
             </div>
             <div class="rule" aria-live="polite">
-              <small>TÄMÄN KIERROKSEN SÄÄNTÖ</small
-              ><strong id="rule">Etsi sama väri 🎨</strong>
+              <small>OMA OIVALLUS</small
+              ><strong id="rule">Mitä yhteistä huomaat kuvissa? 🔎</strong>
             </div>
             <div class="gridchoice">
               <label for="gridSize"><b>Ruudukon koko</b></label
@@ -46,7 +46,7 @@
                 <option value="3x10">3 × 10 (30 korttia)</option>
               </select>
             </div>
-            <div class="board" id="board" aria-label="12 kuvakorttia"></div>
+            <div class="board" id="board" aria-label="16 kuvakorttia"></div>
             <div class="feedback" id="feedback" aria-live="polite">
               Avaa kortteja yksi kerrallaan. Jokainen kortti jää näkyviin.
             </div>
@@ -72,12 +72,7 @@
           </section>
           <section class="panel editor">
             <h2>📷 Lisää omat kuvakortit</h2>
-            <p>
-              Voit tehdä oman pelin ilman koodaamista. Valitse ruudukon koko ja
-              lisää siihen tarvittavat kuvat pareittain. Samaan pariin kuuluvat
-              kuvat voivat olla erilaisia, kunhan niitä yhdistää valitsemasi
-              ominaisuus.
-            </p>
+            <p>Rakenna oma päättelytehtävä: valitse kirjaimia, numeroita, värejä tai omia kuvia ja sijoita ne haluamiisi ruutuihin. Sama kuva saa toistua useassa ruudussa, esimerkiksi koko rivillä. Korttien paikat eivät vaihdu kierrosten välillä.</p>
             <details id="editor">
               <summary><b>Muokkaa kuvakortteja</b></summary>
               <p>
@@ -91,16 +86,16 @@
                 />
               </p>
               <p>
-                <label for="customRule"><b>Mitä lapsen pitää etsiä?</b></label
+                <label for="customRule"><b>Ohjaajan oma muistiinpano (valinnainen)</b></label
                 ><input
                   id="customRule"
                   type="text"
                   maxlength="90"
-                  value="Etsi yhteen kuuluvat kuvat 🧩"
-                  placeholder="Esim. Etsi sama väri"
+                  value="Vapaa päättely"
+                  placeholder="Esim. Keskustelkaa väreistä ja muodoista"
                 />
               </p>
-              <div id="uploadRows"></div>
+              <div class="editor-tools"><label for="itemType"><b>Lisää korttikuva</b></label><select id="itemType"><option value="letter">Kirjain</option><option value="number">Numero</option><option value="color">Väri</option><option value="image">Oma kuva</option></select><label for="itemValue"><b>Kirjain tai numero</b></label><input id="itemValue" value="A" maxlength="12"/><label for="itemColor"><b>Väri</b></label><input id="itemColor" type="color" value="#e35b64"/><label for="itemFile"><b>Oma kuvatiedosto</b></label><input id="itemFile" type="file" accept="image/*"/><p class="note">Valitse sisältö ja napsauta ruutua. Voit myös vetää valmiin ruudun sisällön toiseen ruutuun tai käyttää samaa sisältöä useaan ruutuun. Tyhjennä ruutu hiiren oikealla painikkeella.</p></div><div id="uploadRows" class="editor-board"></div>
               <div class="actions">
                 <button class="action" type="button" id="useCustom">
                   💾 Tallenna ja pelaa</button
@@ -120,8 +115,8 @@
               Kaikki kortit ovat aluksi kiinni. Avaa niitä yksi kerrallaan:
               jokainen avattu kortti jää näkyviin koko kierroksen ajaksi. Tutki
               kuvien ominaisuuksia: <b>väriä</b>, <b>lukumäärää</b> tai
-              <b>muotoa</b>. Kun kaikki kortit ovat auki, voit aloittaa uuden
-              kierroksen ja sääntö vaihtuu.
+              <b>muotoa</b>. Kuvat pysyvät samoilla paikoilla myös uudella kierroksella.
+              Lapsi saa keksiä erilaisia yhteyksiä itse; peli ei anna valmista oikeaa vastausta.
             </p>
           </section>
           <p class="hint">
