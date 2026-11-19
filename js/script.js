@@ -544,5 +544,3 @@ if (celebrateBtn) {
 }
 
 
-}
-
