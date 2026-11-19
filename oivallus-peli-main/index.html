@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="fi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Oivallus! – lasten päättelypeli</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <main>
+      <header class="top">
+        <span class="badge">🧠 Lasten päättelypeli</span>
+        <h1>Oivallus! ✨</h1>
+        <p class="intro">
+          Avaa kortit yksi kerrallaan ja tutki niiden yhteisiä ominaisuuksia!
+        </p>
+      </header>
+      <div class="layout">
+        <aside class="panel library">
+          <h2>📚 Omat pelit</h2>
+          <div id="savedGames">Tallennettuja pelejä ei vielä ole.</div>
+          <p class="library-note">
+            Pelit säilyvät tämän selaimen tallennustilassa. Ne eivät siirry
+            automaattisesti toiselle laitteelle.
+          </p>
+          <button class="action secondary" type="button" id="newSet">
+            ＋ Uudet kuvat
+          </button>
+        </aside>
+        <div class="maincol">
+          <section class="panel">
+            <div class="stats">
+              <span id="round">Kierros 1</span
+              ><span id="pairs">Avattu 0 / 12</span
+              ><span id="score">Kortteja 12</span>
+            </div>
+            <div class="rule" aria-live="polite">
+              <small>TÄMÄN KIERROKSEN SÄÄNTÖ</small
+              ><strong id="rule">Etsi sama väri 🎨</strong>
+            </div>
+            <div class="gridchoice">
+              <label for="gridSize"><b>Ruudukon koko</b></label
+              ><select id="gridSize">
+                <option value="4x4" selected>4 × 4 (16 korttia)</option>
+                <option value="4x6">4 × 6 (24 korttia)</option>
+                <option value="3x10">3 × 10 (30 korttia)</option>
+              </select>
+            </div>
+            <div class="board" id="board" aria-label="12 kuvakorttia"></div>
+            <div class="feedback" id="feedback" aria-live="polite">
+              Avaa kortteja yksi kerrallaan. Jokainen kortti jää näkyviin.
+            </div>
+        <div class="actions">
+        <button
+            id="celebrateBtn"
+            class="celebrate-button"
+            type="button"
+         >
+        🎉 Tehtävä suoritettu!
+        </button>
+
+         <div class="game-buttons">
+        <button class="action" id="next" type="button">
+        🔄 Uusi kierros
+        </button>
+
+        <button class="action secondary" id="reset" type="button">
+            Aloita alusta
+        </button>
+        </div>
+        </div>
+          </section>
+          <section class="panel editor">
+            <h2>📷 Lisää omat kuvakortit</h2>
+            <p>
+              Voit tehdä oman pelin ilman koodaamista. Valitse ruudukon koko ja
+              lisää siihen tarvittavat kuvat pareittain. Samaan pariin kuuluvat
+              kuvat voivat olla erilaisia, kunhan niitä yhdistää valitsemasi
+              ominaisuus.
+            </p>
+            <details id="editor">
+              <summary><b>Muokkaa kuvakortteja</b></summary>
+              <p>
+                <label for="setName"><b>Anna pelille nimi</b></label
+                ><input
+                  id="setName"
+                  type="text"
+                  maxlength="60"
+                  value="Oma kuvapeli"
+                  placeholder="Esim. Eläinkortit"
+                />
+              </p>
+              <p>
+                <label for="customRule"><b>Mitä lapsen pitää etsiä?</b></label
+                ><input
+                  id="customRule"
+                  type="text"
+                  maxlength="90"
+                  value="Etsi yhteen kuuluvat kuvat 🧩"
+                  placeholder="Esim. Etsi sama väri"
+                />
+              </p>
+              <div id="uploadRows"></div>
+              <div class="actions">
+                <button class="action" type="button" id="useCustom">
+                  💾 Tallenna ja pelaa</button
+                ><button class="action secondary" type="button" id="useDemo">
+                  Palaa esimerkkikortteihin
+                </button>
+              </div>
+              <p id="uploadStatus" class="note" aria-live="polite">
+                Kuvat tallennetaan vain tämän selaimen paikalliseen
+                tietokantaan. Niitä ei lähetetä palvelimelle.
+              </p>
+            </details>
+          </section>
+          <section class="panel how">
+            <h2>💡 Miten pelataan?</h2>
+            <p>
+              Kaikki kortit ovat aluksi kiinni. Avaa niitä yksi kerrallaan:
+              jokainen avattu kortti jää näkyviin koko kierroksen ajaksi. Tutki
+              kuvien ominaisuuksia: <b>väriä</b>, <b>lukumäärää</b> tai
+              <b>muotoa</b>. Kun kaikki kortit ovat auki, voit aloittaa uuden
+              kierroksen ja sääntö vaihtuu.
+            </p>
+          </section>
+          <p class="hint">
+            Peli toimii ilman kirjautumista. Tallennetut pelit säilyvät samalla
+            laitteella ja selaimella, ellei selaimen sivustotietoja poisteta.
+            Tallenna tärkeät alkuperäiset kuvat myös muualle.
+          </p>
+        </div>
+      </div>
+    </main>
+    <script src="js/script.js"></script>
+  </body>
+</html>
